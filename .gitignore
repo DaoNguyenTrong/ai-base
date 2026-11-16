@@ -1,0 +1,46 @@
+# dependencies
+node_modules/
+
+# lock files: bun is the only package manager for the root tooling; bun.lock IS tracked.
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+
+# agent tooling (machine-local)
+/.superpowers/
+.codegraph/
+.playwright-mcp/
+# .serena/project.yml is the shared Serena config (language servers) and IS tracked.
+.serena/*
+!.serena/project.yml
+.codex/*
+# Shared Codex wiring. Local Codex state (logs, sessions) stays ignored.
+!.codex/hooks.json
+!.codex/agents/
+!.codex/agents/**
+.claude/worktrees/
+.claude/scheduled_tasks.lock
+.claude/settings.local.json
+.worktrees/
+
+# verification output: logs, screenshots, reports from local runs and e2e
+verify-output/
+
+# environment and secrets
+.env
+.env.*
+!.env.example
+
+# mobile signing material: never commit (store in CI secrets or fastlane match)
+*.jks
+*.keystore
+*.p12
+*.mobileprovision
+
+# logs and OS/editor noise
+*.log
+.DS_Store
+.idea
+*.sw?
+
+# TODO(stack): add the stack's build output, generated code and secret-bearing config files
