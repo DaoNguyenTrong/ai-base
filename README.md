@@ -29,7 +29,7 @@ Tool setup for each team member: [`AI_TOOLS_SETUP.md`](AI_TOOLS_SETUP.md). Branc
 ## Adopting the template
 
 1. Copy the repo (GitHub "Use this template", or a clean `git archive` of a tag) and rename `AI-BASE` (`grep -rn "AI-BASE" .`).
-2. Fill every `TODO(stack)` and `TODO(team)` marker: `grep -rn "TODO(stack)\|TODO(team)" --exclude=workflow-setup-guide.md .`. The order that works: `AGENTS.md` § Repository Layout → `.claude/rules/commands.md`, `testing.md`, `architecture.md` (with an architecture test) → `scripts/test-gate.sh` and `.github/workflows/test.yml` together → `scripts/risk-tier.ts` lists → `scripts/check-comments.ts` `GENERATED` → agent files. A team that wants GitHub to enforce the human-gated areas adds `.github/CODEOWNERS` and turns on code-owner review (`.claude/decisions.md`).
+2. Fill every `TODO(stack)` and `TODO(team)` marker: `grep -rn "TODO(stack)\|TODO(team)" --exclude=workflow-setup-guide.md .`. The order that works: `AGENTS.md` § Repository Layout → `.claude/rules/commands.md`, `testing.md`, `architecture.md` (with an architecture test) → `scripts/test-gate.sh` and `.github/workflows/test.yml` together → `scripts/risk-tier.ts` lists → `scripts/check-comments.ts` `GENERATED` → agent files.
 3. Add an `AGENTS.md` inside each source directory listing the rule files that apply to it.
 4. Run the repository setup in `CONTRIBUTING.md` § Repository Setup.
 5. Verify the symbol tools on your stack (`.claude/rules/serena.md`).
