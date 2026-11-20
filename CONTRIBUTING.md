@@ -68,7 +68,7 @@ Versioning is SemVer; the git tag `vX.Y.Z` is the version.
 
 Once, by a repo admin:
 
-1. Create `main` and `dev` on `origin`; make `dev` the default branch for PRs.
+1. Create `main` and `dev` on `origin`; keep `main` the default branch (`gh repo edit OWNER/REPO --default-branch main`). GitHub's compare button and a bare `gh pr create` then target `main`, so every PR names its base: `gh pr create --base dev`.
 2. Replace the placeholder owners in `.github/CODEOWNERS` with real teams or users.
 3. Run `scripts/setup-branch-protection.sh OWNER/REPO`: on `main` and `dev` it requires a PR, the checks `changes`, `test / scripts` and `test / app`, code-owner review, and forbids force pushes and deletion. `required_approving_review_count` is 0 so `pr-reviewer` can merge tier 0–1 PRs outside CODEOWNERS areas; CODEOWNERS areas still need a human approval. Branch protection on a private repo needs GitHub Pro, Team or Enterprise.
 4. Protect `v*` tags so only the Release manager can push one.
