@@ -49,7 +49,7 @@ Git hooks (installed by `bun install`) block commits to `main`, conflict markers
 
 Write just `none` for a change no user would notice. Never edit `CHANGELOG.md` by hand.
 
-- Merge gates: `/git-accept` for docs-only PRs, `pr-reviewer` for the rest. Human-gated areas and tier-2 PRs are approved and merged by their CODEOWNERS (`.github/CODEOWNERS`).
+- Merge gates: `/git-accept` for docs-only PRs, `pr-reviewer` for the rest. Human-gated areas and tier-2 PRs get `NEEDS_HUMAN` from `pr-reviewer` and are merged by the human approver of the area (`AGENTS.md` § Team Roles).
 
 ## Release process
 
@@ -69,7 +69,6 @@ Versioning is SemVer; the git tag `vX.Y.Z` is the version.
 Once, by a repo admin:
 
 1. Create `main` and `dev` on `origin`; keep `main` the default branch (`gh repo edit OWNER/REPO --default-branch main`). GitHub's compare button and a bare `gh pr create` then target `main`, so every PR names its base: `gh pr create --base dev`.
-2. Replace the placeholder owners in `.github/CODEOWNERS` with real teams or users.
-3. Run `scripts/setup-branch-protection.sh OWNER/REPO`: on `main` and `dev` it requires a PR, the checks `changes`, `test / scripts` and `test / app`, code-owner review, and forbids force pushes and deletion. `required_approving_review_count` is 0 so `pr-reviewer` can merge tier 0–1 PRs outside CODEOWNERS areas; CODEOWNERS areas still need a human approval. Branch protection on a private repo needs GitHub Pro, Team or Enterprise.
-4. Protect `v*` tags so only the Release manager can push one.
-5. When `dev` gets three or more PRs a day, enable the merge queue and record it in `docs/process/decisions.md` (`pr-reviewer.md` explains the `--auto` exception).
+2. Run `scripts/setup-branch-protection.sh OWNER/REPO`: on `main` and `dev` it requires a PR, the checks `changes`, `test / scripts` and `test / app`, applies to admins too, and forbids force pushes and deletion. It requires no approving review (`required_approving_review_count` 0, no code-owner review), because a solo maintainer cannot approve their own PR; human-gated areas are kept to a human by `pr-reviewer` § 4. Branch protection on a private repo needs GitHub Pro, Team or Enterprise.
+3. Protect `v*` tags so only the Release manager can push one.
+4. When `dev` gets three or more PRs a day, enable the merge queue and record it in `docs/process/decisions.md` (`pr-reviewer.md` explains the `--auto` exception).

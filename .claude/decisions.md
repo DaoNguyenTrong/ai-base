@@ -6,9 +6,15 @@ Title format: `### YYYY-MM-DD — <decision>` (date the decision was made, not a
 Write only the **why** — the reasoning and rejected alternative. Never "what was done" or "how" (git log/diff already has that; do not restate file names, method names, or a narrative of the change). Keep each entry under ~80 words (excluding heading).
 **Language:** write every entry in English, even when the conversation that produced it is in another language.
 **Who writes:** whoever makes the change, in the same PR as the change; `pr-reviewer` checks the entry. No separate approval.
-**Append-only:** never edit or delete an existing entry. To reverse one, add a new entry with a `Supersedes: <old title>` line — such an entry needs the Tech lead's explicit approval (CODEOWNERS of `.claude/`).
+**Append-only:** never edit or delete an existing entry. To reverse one, add a new entry with a `Supersedes: <old title>` line — such an entry needs the Tech lead's explicit approval.
 
 ---
+
+### 2026-11-20 — Human-gated areas are kept by `pr-reviewer`, not by CODEOWNERS
+
+Supersedes: Gates are enforced by GitHub branch protection and CODEOWNERS, not only by agents
+
+The repo has one maintainer, and GitHub never counts a PR author's own approval, so required code-owner review would block every PR touching `.claude/`, `.github/` or `scripts/`. Branch protection keeps the required PR, checks, no force push and no deletion; `pr-reviewer` § 4 keeps the human gate. Rejected: disabling `enforce_admins` (it would let the maintainer skip CI too). A second reviewer brings CODEOWNERS back.
 
 ### 2026-11-16 — Gates are enforced by GitHub branch protection and CODEOWNERS, not only by agents
 

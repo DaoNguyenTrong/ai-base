@@ -12,7 +12,7 @@ for branch in main dev; do
   payload=$(printf '{
   "required_status_checks": { "strict": true, "contexts": %s },
   "enforce_admins": true,
-  "required_pull_request_reviews": { "require_code_owner_reviews": true, "required_approving_review_count": 0 },
+  "required_pull_request_reviews": { "require_code_owner_reviews": false, "required_approving_review_count": 0 },
   "restrictions": null,
   "allow_force_pushes": false,
   "allow_deletions": false

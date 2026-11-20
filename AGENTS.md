@@ -26,11 +26,11 @@ The **source directories** are the code rows above (everything except `scripts/`
 | Personas, PRD, priorities, scope | Product Owner (PO) | One person decides; others comment on the draft PR |
 | UI design | PO + Design lead | |
 | Technical design, plan, push/PR authorization | Tech lead | Security-critical module: + Security owner |
-| Merge of a human-gated area (`docs/process/lifecycle.md` § Gates Between Stages) | CODEOWNERS of that area | Enforced by branch protection (`CONTRIBUTING.md` § Repository Setup) |
+| Merge of a human-gated area (`docs/process/lifecycle.md` § Gates Between Stages) | Tech lead; auth areas: + Security owner | `pr-reviewer` returns `NEEDS_HUMAN`; the approver reads the PR and merges it |
 | Release | Release manager | |
 | Escalations from `solution-architect` | business → PO; technical → Tech lead; security → Security owner | |
 
-Change logs record the role and name, e.g. `user decision (PO: <name>)`. Exactly one orchestrator owns a module or phase at a time (the *Owner* column of `docs/process/progress.md`); each member works in their own checkout.
+A solo maintainer holds every role. Change logs record the role and name, e.g. `user decision (PO: <name>)`. Exactly one orchestrator owns a module or phase at a time (the *Owner* column of `docs/process/progress.md`); each member works in their own checkout.
 
 <!-- TODO(team): the names behind each role. -->
 
@@ -46,7 +46,7 @@ Work runs from idea to release, not only from code. Full detail (work sizes S/M/
 | 3 Technical design | `docs/tech/` | `tech-lead`; `appsec` reviews it first when security-critical; Tech lead approves |
 | 4 Plan | `docs/superpowers/plans/` | main session (`writing-plans`); Tech lead approves, may authorize push/PR |
 | 5 Implementation | code, tests, feature-map entry | `implementer`, one plan task per call; review by risk tier (`docs/process/lifecycle.md` § Risk Tiers) |
-| 6 Review and merge | PR merged into `dev` | `pr-reviewer` (docs-only PR: `/git-accept`); human-gated areas: CODEOWNERS |
+| 6 Review and merge | PR merged into `dev` | `pr-reviewer` (docs-only PR: `/git-accept`); human-gated areas: their human approver |
 | 7 Release | tag, changelog | `release-kit:git-release`; Release manager approves |
 
 The main session orchestrates: it sends every question first to `solution-architect`, which answers on the approvers' behalf, asks a human only what that agent escalates, relays answers, and calls agents in order. Subagents cannot ask a human or call each other. A business question found at any later stage goes back to the PRD; nothing downstream proceeds on an unapproved upstream document.
@@ -82,7 +82,7 @@ The step-by-step implementation protocol (memory → live state → CodeGraph/Se
 - Push or open a PR only on an explicit order. The Tech lead may give that order once for a whole plan when approving it (recorded in the plan and in the brief to `implementer`): each time a phase is done and `scripts/test-gate.sh` passes, one PR for that phase into `dev` (`docs/process/lifecycle.md` § Push and PR Permissions). Never for `main`. Asking for a PRD or technical design is also that order, for one draft docs-only PR (`docs/process/lifecycle.md` § Committing Documents).
 - Every PR description has a `## Changelog` section in the `release-kit:git-mr` format (`- Added|Changed|Deprecated|Removed|Fixed|Security: <one reader-facing sentence>`, or just `none`), followed by another `## ` section — `git-release` reads it up to the next `## ` heading, so trailing free text would make it invalid. Required sections: `.claude/release-kit.json` `prExtraSections`.
 - One PR into `dev` at a time: rebase onto the latest `origin/dev`, `git push --force-with-lease` (`release-kit:git-sync` does both), merge with `--merge`, delete the merged branch on the remote and locally (`git branch -d`, never `-D`).
-- Merge into `dev` only through a gate: `/git-accept` for a docs-only PR (`.claude/commands/git-accept.md`), or `pr-reviewer` for any other PR. `pr-reviewer` allows at most 3 revision rounds, then escalates; the areas it never merges are listed once, in `pr-reviewer.md` § 4 — those are merged by their CODEOWNERS.
+- Merge into `dev` only through a gate: `/git-accept` for a docs-only PR (`.claude/commands/git-accept.md`), or `pr-reviewer` for any other PR. `pr-reviewer` allows at most 3 revision rounds, then escalates; the areas it never merges are listed once, in `pr-reviewer.md` § 4 — those are merged by their human approver (§ Team Roles).
 
 ### Tool Selection
 

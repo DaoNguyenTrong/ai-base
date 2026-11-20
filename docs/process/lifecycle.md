@@ -61,7 +61,7 @@ Size decides which documents are needed; the tier decides how closely to check. 
 |---|---|---|
 | **0** | Docs, process text, locale files, generated code and API clients, test-only changes | CI only. The main session reads the diff itself, no review agent |
 | **1** | Everything else: ordinary behaviour in non-sensitive areas (CRUD, screens, lists, filters) | `implementer` on Sonnet, tasks batched by screen. No review after each task; one Sonnet review pass for the whole phase PR (`pr-reviewer`). No mutation checks, no Opus |
-| **2** | Authentication, tokens, cookies, sessions, permissions, tenant/data isolation, API keys, locks and concurrency on shared data, DB migrations, CI and hook config, dependency manifests and lockfiles, container files, `.env*`, app config, `.claude/settings*.json`, the tier script itself | Full process: `appsec` reviews the tech doc before the plan, an Opus reviewer after each task, about 5 mutation checks on tests. The final phase review is `pr-reviewer`, called by the main session with `model: opus`; there is no separate final review. The area's CODEOWNERS merge it (§3 Human-gated areas) |
+| **2** | Authentication, tokens, cookies, sessions, permissions, tenant/data isolation, API keys, locks and concurrency on shared data, DB migrations, CI and hook config, dependency manifests and lockfiles, container files, `.env*`, app config, `.claude/settings*.json`, the tier script itself | Full process: `appsec` reviews the tech doc before the plan, an Opus reviewer after each task, about 5 mutation checks on tests. The final phase review is `pr-reviewer`, called by the main session with `model: opus`; there is no separate final review. The area's human approver merges it (§3 Human-gated areas) |
 
 The path and marker lists for each tier live only in `scripts/risk-tier.ts`. The tech doc of a new module names the tier-2 paths the module adds, and the module's first PR adds them to the script.
 
@@ -76,7 +76,7 @@ The path and marker lists for each tier live only in `scripts/risk-tier.ts`. The
 - **Business questions that arise in a later stage go back to the PRD**, edited by `product-manager`, not decided where found. Technical questions belong to `tech-lead`.
 - **Changes after approval:** editing a PRD returns it to *In review* and requires re-examining the affected design, tech doc and plan. Affected documents also return to *In review* and raise their version. Exception: filling or fixing the link and metadata rows (*Design*, *Plan*, *Updated*) is not a change.
 - **After 3 fix rounds on a PR that still does not pass:** `pr-reviewer` returns `ESCALATE`, naming the document to rethink (PRD, design or plan). There is no 4th fix round.
-- **Human-gated areas:** authentication, tokens, cookies, sessions, permissions, tenant/data isolation, API keys, `.claude/`, `.github/`, `AGENTS.md`, CI and Lefthook config, `scripts/risk-tier.ts`, DB migrations, deployment config, signing and release config, edits or deletions of existing `.claude/decisions.md` entries or a `Supersedes:` line, plus <!-- TODO(stack): product-specific sensitive areas (e.g. payment flows, encryption keys, webhook secrets) -->. `pr-reviewer` does not merge these PRs; they are merged by the area's CODEOWNERS (`.github/CODEOWNERS`).
+- **Human-gated areas:** authentication, tokens, cookies, sessions, permissions, tenant/data isolation, API keys, `.claude/`, `.github/`, `AGENTS.md`, CI and Lefthook config, `scripts/risk-tier.ts`, DB migrations, deployment config, signing and release config, edits or deletions of existing `.claude/decisions.md` entries or a `Supersedes:` line, plus <!-- TODO(stack): product-specific sensitive areas (e.g. payment flows, encryption keys, webhook secrets) -->. `pr-reviewer` does not merge these PRs; they are merged by the human approver of the area (`AGENTS.md` § Team Roles).
 
 ## 4. Design Deviations During Implementation
 
@@ -155,7 +155,7 @@ When the same review comment appears twice, do not add another text rule: turn i
 5. Bundle the module's process changes into one process PR, with the list of personas no story serves any more (§1b), if any.
 6. If the tier-1 `fix` ratio is higher than tier-2's, add the paths of the tier-1 `fix` commits to the tier-2 list of `scripts/risk-tier.ts`, in the process PR of step 5.
 
-**Process freeze mid-module.** Process changes (this file, `AGENTS.md`, `.claude/agents/`, `.claude/rules/`) apply only at the retro. They need Tech lead approval via CODEOWNERS. Mid-module, fix only process bugs that block work, with the reason in an entry of `docs/process/decisions.md`. Improvement ideas that arise mid-module go in the *Pending retro* section of `docs/agent-error-log.md`.
+**Process freeze mid-module.** Process changes (this file, `AGENTS.md`, `.claude/agents/`, `.claude/rules/`) apply only at the retro. They need Tech lead approval. Mid-module, fix only process bugs that block work, with the reason in an entry of `docs/process/decisions.md`. Improvement ideas that arise mid-module go in the *Pending retro* section of `docs/agent-error-log.md`.
 
 **`sa-calibration.md`.** `.claude/sa-calibration.md` records who overrode `solution-architect`. Two members with conflicting taste is a question for the PO, not two contradicting lessons.
 
