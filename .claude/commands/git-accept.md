@@ -24,11 +24,11 @@ gh pr view <number> --json files --jq '.files[].path'
 
 Check each path in turn, in this order:
 
-1. Under `.claude/` or `.github/`, or `AGENTS.md`, or under `docs/process/` other than `docs/process/progress.md` → fail, even when it ends in `.md` (rules, agent prompts and the process itself are reviewed by the CODEOWNERS of those areas; the progress table is status the main session updates in the same PR as an approved document, `docs/process/lifecycle.md` § Module Progress).
+1. Under `.claude/` or `.github/`, or `AGENTS.md`, or under `docs/process/` other than `docs/process/progress.md` → fail, even when it ends in `.md` (rules, agent prompts and the process itself are reviewed by their human approver, `AGENTS.md` § Team Roles; the progress table is status the main session updates in the same PR as an approved document, `docs/process/lifecycle.md` § Module Progress).
 2. Under `docs/`, or ends in `.md` → pass.
 3. Anything else → fail.
 
-Any failing path → stop and report the first offending file. Code goes through `pr-reviewer`; workflows, rules, settings, process documents and anything touching auth need the CODEOWNERS of the area.
+Any failing path → stop and report the first offending file. Code goes through `pr-reviewer`; workflows, rules, settings, process documents and anything touching auth need the human approver of the area (`AGENTS.md` § Team Roles).
 
 ### 3. CI gate
 
