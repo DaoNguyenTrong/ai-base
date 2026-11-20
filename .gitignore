@@ -10,9 +10,8 @@ pnpm-lock.yaml
 /.superpowers/
 .codegraph/
 .playwright-mcp/
-# .serena/project.yml is the shared Serena config (language servers) and IS tracked.
-.serena/*
-!.serena/project.yml
+# Serena config is per machine: each member creates .serena/project.yml (AI_TOOLS_SETUP.md).
+.serena/
 .codex/*
 # Shared Codex wiring. Local Codex state (logs, sessions) stays ignored.
 !.codex/hooks.json

@@ -48,7 +48,7 @@ Restart Claude Code after registering the server. A language that `codegraph sta
 
 ### Serena
 
-Language-server-backed symbol navigation and editing. Shared config goes in `.serena/project.yml` (tracked; TODO(stack): create it with the project's languages and `ignore_all_files_in_gitignore: true`); machine overrides in `.serena/project.local.yml` (ignored).
+Language-server-backed symbol navigation and editing. Config goes in `.serena/project.yml`, which is gitignored like the rest of `.serena/`, so each member creates it (TODO(stack): the project's languages, plus `ignore_all_files_in_gitignore: true`).
 
 ```bash
 uv tool install -p 3.13 serena-agent
