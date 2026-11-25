@@ -51,7 +51,7 @@ Write just `none` for a change no user would notice. Never edit `CHANGELOG.md` b
 
 - Merge gates: `/git-accept` for docs-only PRs, `pr-reviewer` for the rest. Human-gated areas and tier-2 PRs get `NEEDS_HUMAN` from `pr-reviewer` and are merged by the human approver of the area (`AGENTS.md` § Team Roles).
 
-## Release process
+## Release Process
 
 Handled by `release-kit:git-release` (`/git-release`; config in `.claude/release-kit.json`), driven by the Release manager. It detects the phase from the current branch.
 
@@ -64,7 +64,7 @@ Handled by `release-kit:git-release` (`/git-release`; config in `.claude/release
 
 Versioning is SemVer; the git tag `vX.Y.Z` is the version.
 
-## Repository setup
+## Repository Setup
 
 Once, by a repo admin:
 
