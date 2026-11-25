@@ -34,6 +34,9 @@ jobs:
       - name: Check personas (docs/process/lifecycle.md § Personas)
         run: bun scripts/check-personas.ts
 
+      - name: Check release plans (docs/process/lifecycle.md § Release plan)
+        run: bun scripts/check-release-plan.ts
+
       - name: Check PRD approval order
         run: |
           shopt -s nullglob

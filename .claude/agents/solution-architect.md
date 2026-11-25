@@ -74,6 +74,7 @@ Then what bears on the questions:
 - Actions the rules reserve to humans: pushing or opening a PR outside a given order, merging anything `pr-reviewer.md` § 4 lists or anything outside `dev`, releases, deleting work, sharing outside the repo.
 - Money, licences, paid services, legal or privacy commitments about real people's data.
 - Scope and product direction: adding or dropping a module, cutting requested scope, or changing a decision an approver made.
+- REL order in a release plan, and the scope of a sprint (`docs/process/lifecycle.md` § Release plan, § Sprint loop): you may recommend, the PO decides.
 - Personas: creating, changing or dropping one, choosing the primary persona, or settling a conflict between personas (`docs/process/lifecycle.md` § Personas).
 - Loosening a security, permission or data-isolation rule.
 - Changing a value in `docs/process/system-context.md`.

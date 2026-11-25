@@ -37,7 +37,7 @@ Git hooks (installed by `bun install`) block commits to `main`, conflict markers
 - One purpose per PR, at most about 1,500 lines of source excluding tests and generated files (`docs/process/lifecycle.md` § Push and PR Permissions).
 - Rebase onto the latest `origin/dev` and `git push --force-with-lease` before review.
 - CI (`.github/workflows/ci.yml`) runs `changes`, `test / scripts` and `test / app`. A skipped job counts as passing. `scripts/test-gate.sh` runs the same checks locally.
-- The description carries the sections in `.claude/release-kit.json` `prExtraSections` (`Requirements`, `Minor design deviations`, `Verification`, `Risk tier`) and a `## Changelog` section, which must be followed by another `## ` section:
+- The description carries the sections in `.claude/release-kit.json` `prExtraSections` (`Requirements`, `Minor design deviations`, `Verification`, `Risk tier`; with Plane, `Requirements` holds the `Plane:` line of `docs/process/lifecycle.md` § Plane) and a `## Changelog` section, which must be followed by another `## ` section:
 
 ```markdown
 ## Changelog
@@ -51,7 +51,7 @@ Write just `none` for a change no user would notice. Never edit `CHANGELOG.md` b
 
 - Merge gates: `/git-accept` for docs-only PRs, `pr-reviewer` for the rest. Human-gated areas and tier-2 PRs get `NEEDS_HUMAN` from `pr-reviewer` and are merged by the human approver of the area (`AGENTS.md` § Team Roles).
 
-## Release process
+## Release Process
 
 Handled by `release-kit:git-release` (`/git-release`; config in `.claude/release-kit.json`), driven by the Release manager. It detects the phase from the current branch.
 
@@ -64,7 +64,7 @@ Handled by `release-kit:git-release` (`/git-release`; config in `.claude/release
 
 Versioning is SemVer; the git tag `vX.Y.Z` is the version.
 
-## Repository setup
+## Repository Setup
 
 Once, by a repo admin:
 

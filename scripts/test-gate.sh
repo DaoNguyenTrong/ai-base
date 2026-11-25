@@ -22,6 +22,7 @@ run_if() {
 bun test scripts/
 bun scripts/check-comments.ts
 bun scripts/check-personas.ts
+bun scripts/check-release-plan.ts
 prds=(docs/prd/[0-9]*.md)
 [[ -e "${prds[0]}" ]] && bun scripts/check-prd-approval.ts "${prds[@]}"
 

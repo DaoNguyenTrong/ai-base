@@ -6,7 +6,7 @@ A **[User]** value is confirmed by a human approver; a **[Proposed]** value is a
 
 ## Users
 
-Product, user groups, roles and target devices: *Undetermined*. User groups and devices are fixed in `docs/prd/00-personas.md` (`lifecycle.md` § 1b) before any PRD; once that file is approved, this section only points to it. Supported languages: *Undetermined*.
+Product, user groups, roles and target devices: *Undetermined*. User groups and devices are fixed in `docs/prd/00-personas.md` (`lifecycle.md` § Personas) before any PRD; once that file is approved, this section only points to it. Supported languages: *Undetermined*.
 
 ## Scale
 

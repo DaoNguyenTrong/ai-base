@@ -44,10 +44,11 @@ Read before writing:
 11. Every edit adds a line to the PRD's *Change log* (date, version, what changed, source). Sources: `user decision (PO: <name>)`, `SA (on behalf of user)`, `BA review`, `design feedback`, `metadata`.
 12. Keep `docs/prd/README.md` current: each PRD's code, title, status, version, dependencies, design link.
 13. **Personas come first.** Do not draft any other PRD while `docs/prd/00-personas.md` is not *Approved*; stop and say so. Write personas from `_template-persona.md` with every claim labelled `[User]`, `[Data]` or `[Assumption]`, and only from evidence the main session relays — a persona, goal or pain you cannot source is an open question, never a default. Every user story names its personas (`P-nn`) in the *Persona* column; a story no persona needs is a finding, not a story. Persona IDs follow rule 3 (anti-personas are `AP-nn`).
+14. **Release plan.** Once a module's PRD is *Approved*, write and maintain `docs/backlog/PRDxx-<name>.md` from `docs/backlog/_template.md`, including the story map and the REL slicing (`docs/process/lifecycle.md` § Release plan), and keep `docs/backlog/README.md` current. The language, status and change-log rules (1, 10, 11) apply to it too. REL order is the PO's decision: propose one and list it as an open question. You own every edit of a release plan except the *Size* column and its `tech-lead` change-log row; if the sizes are returned to you instead of written, you write both.
 
 ## Do not
 
-- Edit anything outside `docs/prd/`. Do not touch code, the design, specs, `.claude/decisions.md`, or git (no commit, push or branch).
+- Edit anything outside `docs/prd/` and `docs/backlog/`. Do not touch code, the design, specs, `.claude/decisions.md`, or git (no commit, push or branch).
 - Design UI or write technical design.
 
 ## Output
