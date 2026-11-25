@@ -24,7 +24,7 @@ gh pr view <number> --json files --jq '.files[].path'
 
 Check each path in turn, in this order:
 
-1. Under `.claude/` or `.github/`, or `AGENTS.md`, or under `docs/process/` other than `docs/process/progress.md` → fail, even when it ends in `.md` (rules, agent prompts and the process itself are reviewed by their human approver, `AGENTS.md` § Team Roles; the progress table is status the main session updates in the same PR as an approved document, `docs/process/lifecycle.md` § Module Progress).
+1. Under `.claude/` or `.github/`, or `AGENTS.md`, or under `docs/process/` other than `docs/process/progress.md` → fail, even when it ends in `.md` (rules, agent prompts and the process itself are reviewed by their human approver, `AGENTS.md` § Team Roles; the progress table is status the Owner's session updates in the same PR as an approved document, or in the docs PR after a sprint, `docs/process/lifecycle.md` § Module Progress).
 2. Under `docs/`, or ends in `.md` → pass.
 3. Anything else → fail.
 
@@ -44,7 +44,7 @@ gh pr view <number> --json statusCheckRollup --jq '.statusCheckRollup[] | "\(.na
 
 A docs-only PR is tier 0 (`docs/process/lifecycle.md` § Risk Tiers): no agent review. Instead:
 
-1. Run `bun scripts/check-prd-approval.ts` on every changed `docs/prd/*.md` other than `README.md` and the `_template*.md` files. It checks an *Approved* PRD's change log: a `BA review` row before the last user-approval row of the current version, and only `metadata` rows after it (`docs/prd/README.md` § Process, step 4). Any line it prints is `blocking`.
+1. Run `bun scripts/check-prd-approval.ts` on every changed `docs/prd/*.md` and `docs/backlog/*.md` other than `README.md` and the `_template*.md` files. It checks an *Approved* document's change log (PRD or release plan): a `BA review` row before the last user-approval row of the current version, and only `metadata` rows after it (`docs/prd/README.md` § Process, step 4). Any line it prints is `blocking`.
 2. Read the diff (`gh pr diff <number>`) yourself for files, commands, symbols or `§` references that no longer exist. Each one is `blocking`.
 
 Post the script output and "diff read: <findings or None>" as a PR comment so the decision is on record:
