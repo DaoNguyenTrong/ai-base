@@ -5,17 +5,26 @@
 | Code | `TECHXX` |
 | PRD | `PRDXX` (approved version) |
 | UI design | <canvas link and board names> |
-| Status | Draft / In review / Approved |
+| Status per release | The table below |
 | Version | 0.1 |
-| Needs appsec review | Yes / No (sensitive module: identity, tokens, cookies, sessions, private links, public keys) |
-| Approver | Tech lead: <name> (+ Security owner if security-critical) |
+| Needs appsec review | Yes / No, per release (`docs/process/lifecycle.md` § Architecture runway) |
+| Approver | Tech lead: <name> (+ Security owner when a security area is touched) |
 | Updated | YYYY-MM-DD |
 | Depends on | TECH-00, ... |
-| Implementation plan | <path, once it exists> |
+| Implementation plan | <paths of the sprint plans, once they exist> |
+
+Status is tracked per release (`docs/process/lifecycle.md` § Architecture runway):
+
+| Part | Status | Approved at version |
+|---|---|---|
+| Common | Draft / In review / Approved | 1.0 |
+| REL-1 | Draft / In review / Approved | 1.0 |
 
 ## 1. Scope and traceability
 
 The FR/AC codes this document covers, and what is deliberately not done yet. The traceability table is in section 13.
+
+Sections 2, 3, 5, 7 and 12 are the common part for the whole module; sections 4, 6, 8, 9, 10 and 11 are extended release by release (`REL-n`).
 
 ## 2. Architecture
 
@@ -76,9 +85,9 @@ This is the only place a module's decisions are recorded, approved with the docu
 
 ## 13. Traceability
 
-| PRD code | Design part that satisfies it | Test |
-|---|---|---|
-| PRDXX-FR-01 | sections 3, 4 | AC-01 |
+| PRD code | REL | Design part that satisfies it | Test |
+|---|---|---|---|
+| PRDXX-FR-01 | REL-1 | sections 3, 4 | AC-01 |
 
 ## 14. Open questions
 
