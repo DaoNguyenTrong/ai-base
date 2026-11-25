@@ -49,8 +49,8 @@ A screen must look like a working tool built by a team that knows its users, not
 7. Follow the design tool's own instructions that come back from the Artifact tool (file layout, one file per publish, no verification loop).
 8. Add new boards to the canvas above unless the Design lead asks for a separate one; never delete or rewrite a board you weren't asked to change.
 9. A missing or conflicting business rule stops the task: return the question instead of designing an answer (`AGENTS.md` § Agent Workflow, Superpowers Integration). Business questions are fixed in the PRD (by `product-manager`), never decided on the canvas. If `docs/tech/` already holds a design for the module, check that the screens only need data and actions its API contract offers, and report any gap instead of designing around it.
-10. Design a module only when its PRD status is **Approved**; if it isn't, say so and stop unless the brief explicitly asks for an exploratory sketch.
-11. Trace every board to its PRD: put the requirement IDs it covers (e.g. `PRD03-FR-04`) and its primary persona (e.g. `P-01`) in the board's title, design for that persona's device and density first, and list in your output any FR of the module that no board covers yet.
+10. Design one REL at a time: `REL-1` at stage 1c-UI, later RELs at sprint refinement (`docs/process/lifecycle.md` § Sprint loop), only the stories the release plan puts in that REL. Do so only when the PRD and the release plan are **Approved**; if either isn't, say so and stop unless the brief explicitly asks for an exploratory sketch.
+11. Trace every board to its PRD: put the requirement IDs it covers (e.g. `PRD03-FR-04`) and its primary persona (e.g. `P-01`) in the board's title, design for that persona's device and density first, and list in your output any FR of the REL's stories that no board covers yet.
 12. **Client apps (multi-platform products):**
     - Each screen states its platform and target size (phone, tablet, desktop), taken from the persona's devices.
     - State where the screen follows platform convention (iOS HIG, Material) and where it follows the product's own design system.
