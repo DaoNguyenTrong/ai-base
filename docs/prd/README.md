@@ -17,11 +17,12 @@ Any change to an approved PRD returns it to *In review*.
 
 ## Parsed by scripts
 
-`scripts/check-prd-approval.ts` and `scripts/check-personas.ts` parse these templates, so do not rename them:
+`scripts/check-prd-approval.ts`, `scripts/check-personas.ts` and `scripts/check-release-plan.ts` parse these templates, so do not rename them:
 - the metadata table rows `Status` (value starts with Draft / In review / Approved) and `Version` (`N.N`);
 - the change-log table at the end of each document, rows `| YYYY-MM-DD | N.N | Change | Source |` (column order: date, version, change, source);
 - an approval row has a *Change* starting `User approval` and a *Source* containing `user decision`; a BA review row has a *Source* starting `BA review`; rows after the approval row must have *Source* exactly `metadata`;
-- persona headings `### P-nn — <name>` in `00-personas.md`.
+- persona headings `### P-nn — <name>` in `00-personas.md`;
+- for the release plan check: the metadata row `Code`, and the column order of the tables: *Priority* last in §4 User stories, *Story* third in §5 Functional requirements, *Requirement* second in §7 Acceptance criteria. A moved column silently weakens the check. A removed item keeps its row, its code struck through or the row marked `~~Removed~~`.
 
 ## Catalogue
 

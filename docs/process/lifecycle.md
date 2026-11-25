@@ -101,7 +101,7 @@ A sprint is half a month: `SPR-YYYY-MM-S1` from day 1 to 15, `SPR-YYYY-MM-S2` fr
 4. **Sprint review**, on the last day.
    - The main session writes a demo script per story from its AC, with evidence: e2e tests by `qa-app`, screenshots taken on `dev` with the `run` skill.
    - The PO accepts story by story: accepted becomes *Done*; not accepted stays open with the reason in a comment; a new requirement goes back to the PRD (size M) and is not built within the sprint.
-   - The main session asks the Tech lead for permission to push and open the PR that records the sprint's results (§10).
+   - Each Owner's session, and the Sprint owner's, asks the Tech lead for permission to push and open its own PR recording the sprint's results (§10).
 5. **Sprint retro**, right after the review (§8). On Plane the Sprint owner's session completes the Cycle and moves unfinished stories to the next one (`transfer_workitems`), under the write rights in § Plane.
 
 ## Definition of Ready and Done
@@ -131,7 +131,7 @@ The repository is the source of truth for content; Plane is where the team follo
 
 **Configuration.** A project that uses Plane copies `.claude/plane.example.json` to `.claude/plane.json` and fills in `baseUrl` (the `https` address of Plane), `workspaceSlug`, the project id and identifier, the id of each state, and the ids of the `bug` label and of its own layer labels under `labels.layers` <!-- TODO(stack): the layer labels, e.g. one per source directory -->. The template ignores the file in git; a project that turns Plane on removes that `.gitignore` line and commits the file, which holds no secret, because CI reads it from the base commit. Release labels `PRDxx-REL-n` are created as needed and are not listed. **Without `.claude/plane.json`, skip every Plane step**; points and story status then live in the *Story* table of `progress.md` (§10).
 
-**CI configuration.** Set the repository secret `PLANE_API_KEY`. **Anyone who can push a branch can read it:** any workflow on any pushed branch (for example a new file that runs `on: push`) gets the repository's secrets. Using `pull_request_target` would therefore not close the gap, and it is not used; checking out the base commit only fixes which script runs while the workflow is unedited. Required:
+**CI configuration.** Set the repository secret `PLANE_API_KEY`. **Anyone who can push a branch can read it:** any workflow on any pushed branch (for example a new file that runs `on: push`) gets the repository's secrets. Switching to `pull_request_target` alone would not close the gap; pairing it with an environment secret limited to `dev` was not adopted (nor checked against GitHub's documentation). Checking out the base commit only fixes which script runs while the workflow is unedited. Required:
 - the token belongs to a low-privilege bot account that is a member of that one project, and has an expiry date if Plane allows one;
 - rotate it when a person loses push access;
 - pull requests from forks get no secret only while the repository setting that sends secrets to fork workflows is off (the setting exists for private repositories);
@@ -198,7 +198,7 @@ CI never changes an item that is *Done*, *Cancelled* or *Pending*, and a Plane e
 
 **Write rights.** Besides the CI job, only the session of the module's Owner (the *Owner* column of `progress.md`) writes to Plane, and for the Cycle the Sprint owner's session. Subagents never call Plane.
 - Without asking, at the milestones above: create work items, change state, label or points, attach links, comment.
-- The PO confirms each time: create, `complete` or edit a Cycle; add a story to a Cycle or remove it (that is the sprint commitment); delete anything; edit a Module.
+- The PO confirms each time: create, `complete` or edit a Cycle; add a story to a Cycle or remove it (that is the sprint commitment); delete anything; create or edit a Module.
 
 ## 2. Work Size
 
@@ -355,6 +355,6 @@ The progress table is `docs/process/progress.md`. A module's rows are updated on
 - **Sprint table**, one row per sprint: Cycle, Sprint owner, goal, committed points, *Done* points, stories moved, stories rejected, time in *Pending* (§8; `-` without Plane). With Plane the numbers come from the Cycle.
 - **Metrics table**, eight numbers per module: calendar days (from the first PRD draft to the merge of the last PR), PR count, the `fix` commit ratio (`git log`), the `fix` ratio by tier (`bun scripts/risk-tier.ts --fix-ratio`), questions asked to humans, agent tokens, number of sprints and mean velocity.
 
-**PR after the sprint.** A story is *Done* only after the PO accepts it, when its feature PRs are already merged. So after the sprint review and retro, *REL done*, the *Sprint* row and the *Story* rows (when used) go into a small docs-only PR, merged through `/git-accept`. The permission to push and open it is asked of the Tech lead at the sprint review.
+**PR after the sprint.** A story is *Done* only after the PO accepts it, when its feature PRs are already merged. So after the sprint review and retro, small docs-only PRs record the results, each merged through `/git-accept`: every Owner's session opens one with its module's *REL done* and *Story* rows (when used), and the Sprint owner's session puts the *Sprint* row in its own. The permission to push and open them is asked of the Tech lead at the sprint review.
 
 **Agent tokens.** Each agent's completion report carries that agent's token count. At the end of each phase, the main session records the total by agent type and tier in the `## Verification` section of the phase PR, for example `implementer t1: 210k; pr-reviewer t1: 45k`. The main session's own tokens cannot be measured, so they are not recorded.

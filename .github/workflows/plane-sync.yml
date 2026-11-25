@@ -1,6 +1,6 @@
 # Moves Plane work items from PRs into dev (docs/process/lifecycle.md § Plane). Never a required check.
 # SECURITY: anyone who can push a branch can read PLANE_API_KEY, through any workflow on that branch.
-# So pull_request_target would not close it and is not used; the base checkout only pins the unedited script.
+# pull_request_target alone would not close that and is not used; the base checkout only pins the unedited script.
 name: Plane sync
 
 on:

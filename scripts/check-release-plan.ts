@@ -10,7 +10,7 @@ type Files = Record<string, string>
 export type ReleasePlanInput = { prds: Files; backlog: Files; plans: Files }
 
 type Story = { must: boolean; acs: string[] }
-type Prd = { approved: boolean; stories: Map<string, Story>; acs: Set<string> }
+type Prd = { approved: boolean; stories: Map<string, Story>; acs: Set<string>; removed: Set<string> }
 type Entry = { rel: string; story: string; acs: string[] | undefined }
 
 const BACKLOG_DIR = 'docs/backlog/'
@@ -37,8 +37,14 @@ const rows = (markdown: string) =>
 const ids = (cell: string, kind: 'US' | 'FR', code: string) =>
   [...cell.matchAll(new RegExp(`${kind}-\\d+`, 'g'))].map((m) => `${code}-${m[0]}`)
 
+// A dropped item keeps its row, struck through or marked `~~Removed~~`: still a known id, never required.
+const unstruck = (cell: string) => cell.replaceAll('~~', '')
+const isRemoved = (row: string[]) => row[0].startsWith('~~') || row.some((c) => c.includes('~~Removed~~'))
+
 function parsePrd(markdown: string, code: string): Prd {
-  const table = rows(markdown)
+  const raw = rows(markdown)
+  const removed = new Set(raw.filter(isRemoved).map((c) => unstruck(c[0])))
+  const table = raw.map((c) => [unstruck(c[0]), ...c.slice(1)])
   const of = (kind: string) => table.filter((c) => new RegExp(`^${code}-${kind}-\\d+$`).test(c[0]))
   const frStories = new Map(of('FR').map((c) => [c[0], ids(c[2] ?? '', 'US', code)]))
   const acStories = of('AC').map((c) => ({
@@ -49,12 +55,13 @@ function parsePrd(markdown: string, code: string): Prd {
     of('US').map((c) => [
       c[0],
       {
-        must: c[c.length - 1].startsWith('Must'),
+        must: !removed.has(c[0]) && c[c.length - 1].startsWith('Must'),
         acs: acStories.filter((a) => a.stories.includes(c[0])).map((a) => a.ac),
       },
     ]),
   )
-  return { approved: status(markdown) === 'Approved', stories, acs: new Set(of('AC').map((c) => c[0])) }
+  const acs = new Set(of('AC').map((c) => c[0]))
+  return { approved: status(markdown) === 'Approved', stories, acs, removed }
 }
 
 function findPrd(prds: Files, code: string): Prd | undefined {
@@ -123,7 +130,7 @@ function checkCoverage(prd: Prd, entries: Entry[]): string[] {
     const planned = entries.filter((e) => e.story === id)
     if (planned.length === 0) findings.push(`Must story ${id} is in no REL`)
     else if (planned.every((e) => e.acs)) {
-      const missing = story.acs.filter((ac) => !planned.some((e) => e.acs?.includes(ac)))
+      const missing = story.acs.filter((ac) => !prd.removed.has(ac) && !planned.some((e) => e.acs?.includes(ac)))
       if (missing.length > 0) findings.push(`Must story ${id} is split but ${missing.join(', ')} are in no REL`)
     }
   }

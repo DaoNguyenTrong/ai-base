@@ -12,7 +12,7 @@ Write only the **why** — the reasoning and rejected alternative. Never "what w
 
 ### 2026-11-25 — CI syncs work item state to Plane
 
-State kept by hand from a session drifts when PRs move elsewhere. Accepted exposure: anyone who can push a branch can read the Plane token, so it belongs to a low-privilege bot. `pull_request_target` would not close that and is rejected, as is failing or requiring the check, which would let a Plane outage block merges. The template ignores its config; an adopting project commits it, because CI reads it from the base commit. Cost: fork PRs are not synced.
+State kept by hand from a session drifts when PRs move elsewhere. Accepted exposure: anyone who can push a branch can read the Plane token, so it belongs to a low-privilege bot. `pull_request_target` alone would not close that; adding an environment limited to `dev` was not adopted. Failing or requiring the check is rejected: a Plane outage would block merges. The template ignores its config; an adopting project commits it, because CI reads it from the base commit. Cost: fork PRs are not synced.
 
 ### 2026-11-25 — Release plan checker in the test gate
 

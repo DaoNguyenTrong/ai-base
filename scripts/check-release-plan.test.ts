@@ -1,4 +1,6 @@
 import { expect, test } from 'bun:test'
+import { readFileSync } from 'node:fs'
+import { join } from 'node:path'
 import { checkReleasePlans, type ReleasePlanInput } from './check-release-plan'
 
 const APPROVED_LOG = [
@@ -291,3 +293,35 @@ test('fileNamePrefixDiffersFromHeader_fails', () =>
   expect(check({ backlog: { 'PRD02-x.md': releasePlan('Approved', FULL) } })).toEqual([
     'PRD02-x.md: file name prefix PRD02 differs from header PRD PRD01',
   ]))
+
+// An approved PRD keeps a dropped item in its table, marked `~~Removed~~` (product-manager.md rule 3).
+const withRemoved = (row: string) => ({ '01-x.md': prd('Approved', [...PRD_ROWS, row]) })
+
+test.each([
+  '| PRD01-US-04 | P-01 | ~~Removed~~ 2026-11-25 | | | Must |',
+  '| ~~PRD01-US-04~~ | P-01 | team lead | print | I have paper | Must |',
+])('removedStory_needsNoRel_andStaysKnown: %s', (row) =>
+  expect(
+    check({
+      prds: withRemoved(row),
+      backlog: { 'PRD01-x.md': `${releasePlan('Approved', FULL)}\n- PRD01-US-04 was dropped\n` },
+    }),
+  ).toEqual([]),
+)
+
+test('removedAc_isNotRequiredOfASplitStory', () => {
+  const rows = PRD_ROWS.map((r) => (r.startsWith('| PRD01-AC-02') ? '| ~~PRD01-AC-02~~ | FR-01 | a | b | c |' : r))
+  const rels = [rel(1, 'PRD01-US-01 (AC-01); PRD01-US-02')]
+  expect(
+    check({ prds: { '01-x.md': prd('Approved', rows) }, backlog: { 'PRD01-x.md': releasePlan('Approved', rels) } }),
+  ).toEqual([])
+})
+
+// The checker reads PRD columns by position, so the template must keep them there.
+test('prdTemplate_keepsTheColumnsTheCheckerReads', () => {
+  const template = readFileSync(join(import.meta.dir, '../docs/prd/_template.md'), 'utf8')
+  const header = (first: string) => template.split('\n').find((l) => l.startsWith(first))
+  expect(header('| Code | Persona |')).toEndWith('| Priority |')
+  expect(header('| Code | Requirement | Story |')).toBeDefined()
+  expect(header('| Code | Requirement | Given |')).toBeDefined()
+})
