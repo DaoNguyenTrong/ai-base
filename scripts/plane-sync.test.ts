@@ -292,3 +292,134 @@ describe('command line', () => {
     expect(r.out).not.toContain(TOKEN)
   })
 })
+
+// Guards on the CI wiring. They hold for the committed files only: a branch can edit its own copy.
+describe('GitHub workflow', () => {
+  const text = () => readFileSync(join(import.meta.dir, '../.github/workflows/plane-sync.yml'), 'utf8')
+  type Step = { uses?: string; run?: string; with?: Record<string, unknown>; env?: Record<string, string> }
+  const workflow = () => Bun.YAML.parse(text()) as any
+  const steps = (): Step[] => workflow().jobs['plane-sync'].steps
+
+  test('runs on pull_request into dev with read access only', () => {
+    expect(Object.keys(workflow().on)).toEqual(['pull_request'])
+    expect(workflow().on.pull_request.branches).toEqual(['dev'])
+    expect(workflow().permissions).toEqual({ contents: 'read' })
+  })
+
+  test('checks out the base commit, never the head', () => {
+    const checkouts = steps().filter((s) => s.uses?.startsWith('actions/checkout@'))
+    expect(checkouts.map((s) => s.with?.ref)).toEqual(['${{ github.event.pull_request.base.sha }}'])
+    expect(steps().some((s) => /git (checkout|switch|merge|reset)/.test(s.run ?? ''))).toBe(false)
+  })
+
+  test('gives the secret to one step and interpolates nothing into a shell', () => {
+    expect(text().match(/secrets\./g)).toHaveLength(1)
+    expect(steps().filter((s) => s.env?.PLANE_API_KEY)).toHaveLength(1)
+    for (const step of steps()) expect(step.run ?? '').not.toContain('${{')
+  })
+
+  const condition = () => workflow().jobs['plane-sync'].if.replace(/\s+/g, ' ')
+
+  test('skips a draft pull request unless it is being closed or was just converted to draft', () => {
+    expect(condition()).toContain(
+      "(github.event.action == 'closed' || github.event.action == 'converted_to_draft' || " +
+        "(github.event.pull_request.state == 'open' && !github.event.pull_request.draft))",
+    )
+  })
+
+  test('runs on conversion to draft and passes it on as drafted', () => {
+    expect(workflow().on.pull_request.types).toContain('converted_to_draft')
+    const event = steps().find((s) => s.env?.EVENT)!.env!.EVENT
+    expect(event).toStartWith("${{ github.event.action == 'converted_to_draft' && 'drafted' ||")
+  })
+
+  // The post-release main -> dev merge carries the release's commit trailers but serves no work item.
+  test('skips the reconcile pull request', () => {
+    expect(condition()).toContain("!startsWith(github.event.pull_request.head.ref, 'chore/reconcile-main-')")
+  })
+
+  test('is not a required check', () => {
+    const setup = readFileSync(join(import.meta.dir, 'setup-branch-protection.sh'), 'utf8')
+    expect(setup).not.toContain('plane')
+  })
+
+  test('skips forks and can never fail the pull request', () => {
+    expect(workflow().jobs['plane-sync'].if).toContain(
+      'github.event.pull_request.head.repo.full_name == github.repository',
+    )
+    for (const step of workflow().jobs['plane-sync'].steps) expect(step['continue-on-error']).toBe(true)
+  })
+})
+
+// Runs the Sync step's own shell against a real repository, with `bun` replaced by `cat`.
+describe('GitHub commit range', () => {
+  const roots: string[] = []
+  afterEach(() => {
+    for (const root of roots.splice(0)) rmSync(root, { recursive: true, force: true })
+  })
+
+  const workflow = () =>
+    Bun.YAML.parse(readFileSync(join(import.meta.dir, '../.github/workflows/plane-sync.yml'), 'utf8')) as any
+  const syncStep = () => workflow().jobs['plane-sync'].steps.find((s: { name?: string }) => s.name === 'Sync')
+
+  // dev: base -> earlier (another PR) -> merge of feature; feature forked from base and merged dev back in.
+  function repo() {
+    const root = mkdtempSync(join(tmpdir(), 'plane-range-'))
+    roots.push(root)
+    const env = {
+      PATH: process.env.PATH!,
+      GIT_CONFIG_GLOBAL: '/dev/null',
+      GIT_CONFIG_NOSYSTEM: '1',
+      GIT_AUTHOR_NAME: 't',
+      GIT_AUTHOR_EMAIL: 't@example.invalid',
+      GIT_COMMITTER_NAME: 't',
+      GIT_COMMITTER_EMAIL: 't@example.invalid',
+    }
+    const git = (...args: string[]) => {
+      const r = Bun.spawnSync(['git', ...args], { cwd: root, env })
+      if (r.exitCode !== 0) throw new Error(r.stderr.toString())
+      return r.stdout.toString().trim()
+    }
+    const commit = (message: string) => git('commit', '--allow-empty', '-qm', message)
+    git('init', '-qb', 'dev')
+    commit('base')
+    git('checkout', '-qb', 'feature')
+    commit('own-work')
+    git('checkout', '-q', 'dev')
+    commit('other-pr')
+    git('checkout', '-q', 'feature')
+    git('merge', '-q', '--no-ff', '-m', 'sync-dev', 'dev')
+    const head = git('rev-parse', 'HEAD')
+    git('update-ref', 'refs/remotes/origin/dev', 'dev')
+    const merge = () => {
+      git('checkout', '-q', 'dev')
+      git('merge', '-q', '--no-ff', '-m', 'merge-commit', 'feature')
+      git('update-ref', 'refs/remotes/origin/dev', 'dev')
+      return git('rev-parse', 'HEAD')
+    }
+    const subjects = (event: string, mergeSha: string) => {
+      const script = `bun() { cat; }\n${syncStep().run}`
+      const r = Bun.spawnSync(['bash', '-e', '-c', script], {
+        cwd: root,
+        env: { ...env, EVENT: event, PR_HEAD: head, MERGE_SHA: mergeSha },
+      })
+      return r.stdout.toString().split('\n').filter(Boolean).sort()
+    }
+    return { merge, subjects }
+  }
+
+  test('passes the head and merge commits through env, never the base sha', () => {
+    expect(syncStep().env.PR_HEAD).toBe('${{ github.event.pull_request.head.sha }}')
+    expect(syncStep().env.MERGE_SHA).toBe('${{ github.event.pull_request.merge_commit_sha }}')
+    expect(JSON.stringify(syncStep())).not.toContain('base.sha')
+  })
+
+  test.each(['opened', 'closed', 'drafted'])('%s reads the head commits that dev does not have', (event) =>
+    expect(repo().subjects(event, '')).toEqual(['own-work', 'sync-dev']),
+  )
+
+  test('merged reads what the merge commit brought into dev', () => {
+    const r = repo()
+    expect(r.subjects('merged', r.merge())).toEqual(['own-work', 'sync-dev'])
+  })
+})
