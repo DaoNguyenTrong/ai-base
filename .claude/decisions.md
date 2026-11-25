@@ -10,6 +10,14 @@ Write only the **why** — the reasoning and rejected alternative. Never "what w
 
 ---
 
+### 2026-11-25 — CI syncs work item state to Plane
+
+State kept by hand from a session drifts when PRs move elsewhere. Accepted exposure: anyone who can push a branch can read the Plane token, so it belongs to a low-privilege bot. `pull_request_target` would not close that and is rejected, as is failing or requiring the check, which would let a Plane outage block merges. The template ignores its config; an adopting project commits it, because CI reads it from the base commit. Cost: fork PRs are not synced.
+
+### 2026-11-25 — Release plan checker in the test gate
+
+Release plans and sprint plans cite PRD codes across files, so a stale story, a dropped Must story or an unapproved plan would go unnoticed unless a tool fails the build. It is its own script in the same gate and CI job as the persona check. Rejected: extending the PRD approval checker, which checks one document's approval order per path; cross-document coverage would mix two contracts in one script.
+
 ### 2026-11-20 — Human-gated areas are kept by `pr-reviewer`, not by CODEOWNERS
 
 Supersedes: Gates are enforced by GitHub branch protection and CODEOWNERS, not only by agents
