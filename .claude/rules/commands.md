@@ -19,6 +19,7 @@ bun scripts/risk-tier.ts --base origin/dev    # risk tier of the current change
 bun scripts/check-comments.ts                 # comment-length check over the tracked tree
 bun scripts/check-personas.ts                 # personas Approved before any module PRD
 bun scripts/check-prd-approval.ts             # review-before-approval order in PRD change logs
+bun scripts/check-release-plan.ts             # release plans match their PRD; sprint plans have an approved one
 ```
 
 ## Build

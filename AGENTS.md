@@ -11,7 +11,7 @@ AI-BASE is a stack-agnostic workflow template for teams. Every `TODO(stack)` mar
 | Path | Stack | Relevant rules |
 | --- | --- | --- |
 | `scripts/` | Bun + TypeScript check scripts, Bash guard, `test-gate.sh` | `commands.md`, `comments.md` |
-| `docs/` | PRDs, technical designs, plans, process | `docs/process/lifecycle.md` |
+| `docs/` | PRDs, release plans, technical designs, sprint plans, process | `docs/process/lifecycle.md` |
 | `src/` _(placeholder)_ | TODO(stack) | `architecture.md`, `code-conventions.md`, `testing.md`, `authentication.md`, `localization.md`, `commands.md`, `comments.md` |
 | `shared/contract/` _(placeholder)_ | TODO(stack): OpenAPI / GraphQL / proto | `api-contract.md` |
 
@@ -24,13 +24,14 @@ The **source directories** are the code rows above (everything except `scripts/`
 | Gate | Approver | Notes |
 | --- | --- | --- |
 | Personas, PRD, priorities, scope | Product Owner (PO) | One person decides; others comment on the draft PR |
+| Release plan, release order, sprint goal and committed stories, sprint review acceptance | PO | |
 | UI design | PO + Design lead | |
-| Technical design, plan, push/PR authorization | Tech lead | Security-critical module: + Security owner |
-| Merge of a human-gated area (`docs/process/lifecycle.md` § Gates Between Stages) | CODEOWNERS of that area | Enforced by branch protection (`CONTRIBUTING.md` § Repository Setup) |
+| Technical design (each release), sprint plan file, push/PR authorization | Tech lead | A release or common part touching a security area: + Security owner (`docs/process/lifecycle.md` § Architecture runway) |
+| Merge of a human-gated area (`docs/process/lifecycle.md` § Gates Between Stages) | Tech lead; auth areas: + Security owner | `pr-reviewer` returns `NEEDS_HUMAN`; the approver reads the PR and merges it |
 | Release | Release manager | |
 | Escalations from `solution-architect` | business → PO; technical → Tech lead; security → Security owner | |
 
-Change logs record the role and name, e.g. `user decision (PO: <name>)`. Exactly one orchestrator owns a module or phase at a time (the *Owner* column of `docs/process/progress.md`); each member works in their own checkout.
+A solo maintainer holds every role. Change logs record the role and name, e.g. `user decision (PO: <name>)`. Exactly one orchestrator owns a module or phase at a time (the *Owner* column of `docs/process/progress.md`); each member works in their own checkout. Only that Owner's session writes Plane and the module's `progress.md` rows, and subagents never call Plane; each sprint also names one Sprint owner, whose session handles velocity and the Cycle (`docs/process/lifecycle.md` § Plane, § Sprint loop).
 
 <!-- TODO(team): the names behind each role. -->
 
@@ -42,12 +43,19 @@ Work runs from idea to release, not only from code. Full detail (work sizes S/M/
 | --- | --- | --- |
 | 0 Idea and vision | personas (`docs/prd/00-personas.md`, required before any PRD), module list, priorities | main session (`brainstorming`); personas: `product-manager`, reviewed by `business-analyst`; PO approves |
 | 1 Requirements | PRD in `docs/prd/` | `product-manager`, reviewed by `business-analyst`; PO approves |
-| 2 UI design | boards on the design canvas | `ui-designer`; PO + Design lead approve |
-| 3 Technical design | `docs/tech/` | `tech-lead`; `appsec` reviews it first when security-critical; Tech lead approves |
-| 4 Plan | `docs/superpowers/plans/` | main session (`writing-plans`); Tech lead approves, may authorize push/PR |
+| 1b Release plan | `docs/backlog/` | `product-manager`, sizes by `tech-lead`, reviewed by `business-analyst`; PO approves |
+| 1c-UI UI of `REL-1` | boards on the design canvas | `ui-designer`; PO + Design lead approve |
+| 1c Architecture runway | `docs/tech/` v1.0: common part and `REL-1` | `tech-lead`; `appsec` first when a security area is touched; Tech lead approves |
+| 2 UI design | boards of the next release | `ui-designer`; PO + Design lead approve |
+| 3 Technical design | the next release added to `docs/tech/` | `tech-lead`; `appsec` first when a security area is touched; Tech lead approves |
+| 4 Sprint planning | sprint plan in `docs/superpowers/plans/` | main session (`writing-plans`); PO approves goal and stories, Tech lead the plan file and may authorize push/PR |
 | 5 Implementation | code, tests, feature-map entry | `implementer`, one plan task per call; review by risk tier (`docs/process/lifecycle.md` § Risk Tiers) |
-| 6 Review and merge | PR merged into `dev` | `pr-reviewer` (docs-only PR: `/git-accept`); human-gated areas: CODEOWNERS |
+| 6 Review and merge | PR merged into `dev` | `pr-reviewer` (docs-only PR: `/git-accept`); human-gated areas: their human approver |
+| 6b Sprint review | demo of each story | main session prepares; PO accepts |
+| 6c Sprint retro | sprint numbers, improvement ideas | main session |
 | 7 Release | tag, changelog | `release-kit:git-release`; Release manager approves |
+
+A module starts with 0 → 1 → 1b → 1c-UI → 1c; stages 2 to 6c then repeat every sprint (`docs/process/lifecycle.md` § Sprint loop). A story enters a sprint and is finished only by `docs/process/lifecycle.md` § Definition of Ready and Done.
 
 The main session orchestrates: it sends every question first to `solution-architect`, which answers on the approvers' behalf, asks a human only what that agent escalates, relays answers, and calls agents in order. Subagents cannot ask a human or call each other. A business question found at any later stage goes back to the PRD; nothing downstream proceeds on an unapproved upstream document.
 
@@ -79,10 +87,10 @@ The step-by-step implementation protocol (memory → live state → CodeGraph/Se
 - Run `git branch --show-current` before every commit; never commit on `main` (the Lefthook branch guard blocks it) or on a branch you didn't expect.
 - Stage only the files the task changed, by explicit path — never `git add -A`/`git add .`/`git commit -a`; leave changes that predate the task unstaged.
 - A commit rejected by Lefthook (commitlint, formatter, secretlint, comments) means fix the message or re-stage — never `--no-verify`.
-- Push or open a PR only on an explicit order. The Tech lead may give that order once for a whole plan when approving it (recorded in the plan and in the brief to `implementer`): each time a phase is done and `scripts/test-gate.sh` passes, one PR for that phase into `dev` (`docs/process/lifecycle.md` § Push and PR Permissions). Never for `main`. Asking for a PRD or technical design is also that order, for one draft docs-only PR (`docs/process/lifecycle.md` § Committing Documents).
+- Push or open a PR only on an explicit order. The Tech lead may give that order once for a whole plan when approving it (recorded in the plan and in the brief to `implementer`): each time a phase is done and `scripts/test-gate.sh` passes, one PR for that phase into `dev` (`docs/process/lifecycle.md` § Push and PR Permissions). Never for `main`. Asking for a PRD or technical design (the module's first, or a later release's) is also that order, for one draft docs-only PR (`docs/process/lifecycle.md` § Committing Documents).
 - Every PR description has a `## Changelog` section in the `release-kit:git-mr` format (`- Added|Changed|Deprecated|Removed|Fixed|Security: <one reader-facing sentence>`, or just `none`), followed by another `## ` section — `git-release` reads it up to the next `## ` heading, so trailing free text would make it invalid. Required sections: `.claude/release-kit.json` `prExtraSections`.
 - One PR into `dev` at a time: rebase onto the latest `origin/dev`, `git push --force-with-lease` (`release-kit:git-sync` does both), merge with `--merge`, delete the merged branch on the remote and locally (`git branch -d`, never `-D`).
-- Merge into `dev` only through a gate: `/git-accept` for a docs-only PR (`.claude/commands/git-accept.md`), or `pr-reviewer` for any other PR. `pr-reviewer` allows at most 3 revision rounds, then escalates; the areas it never merges are listed once, in `pr-reviewer.md` § 4 — those are merged by their CODEOWNERS.
+- Merge into `dev` only through a gate: `/git-accept` for a docs-only PR (`.claude/commands/git-accept.md`), or `pr-reviewer` for any other PR. `pr-reviewer` allows at most 3 revision rounds, then escalates; the areas it never merges are listed once, in `pr-reviewer.md` § 4 — those are merged by their human approver (§ Team Roles).
 
 ### Tool Selection
 
@@ -104,7 +112,7 @@ A language CodeGraph does not index (`codegraph status`) uses grep + `Read`. Ver
 If the superpowers plugin is installed, its skills yield to this file. Where a skill's default disagrees, these win:
 
 - **Where it fits** — brainstorming / systematic-debugging / writing-plans run after the protocol's orientation steps 1–4.
-- **Documents** — requirements go in `docs/prd/` (`product-manager`) and technical design in `docs/tech/` (`tech-lead`) instead of `docs/superpowers/specs/`; brainstorming feeds those. Plans go in `docs/superpowers/plans/`. Commit timing follows `docs/process/lifecycle.md` § Committing Documents, whatever the skill's own commit step says.
+- **Documents** — requirements go in `docs/prd/` (`product-manager`), release plans in `docs/backlog/` (`product-manager`) and technical design in `docs/tech/` (`tech-lead`) instead of `docs/superpowers/specs/`; brainstorming feeds those. Sprint plans go in `docs/superpowers/plans/`. Commit timing follows `docs/process/lifecycle.md` § Committing Documents, whatever the skill's own commit step says.
 - **Per-module flow** — the stages above, sized S/M/L. The main session uses `subagent-driven-development` to hand `implementer` one task at a time and reviews by risk tier; `implementer` itself uses `executing-plans`, TDD, debugging, verification and `receiving-code-review`.
 - **Requirement gaps stop the run** — "rulings, not stalls" covers technical ambiguity only. A missing or conflicting business rule or acceptance criterion means stop and ask; never invent business behavior.
 - **Branch & worktree** — work in your own checkout on one `feature/*` branch cut from `dev`; no worktree for a skill run.

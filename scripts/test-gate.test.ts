@@ -41,6 +41,7 @@ describe('test-gate.sh', () => {
       'bun test scripts/',
       'bun scripts/check-comments.ts',
       'bun scripts/check-personas.ts',
+      'bun scripts/check-release-plan.ts',
     ])
   })
 

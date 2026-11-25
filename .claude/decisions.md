@@ -6,9 +6,23 @@ Title format: `### YYYY-MM-DD — <decision>` (date the decision was made, not a
 Write only the **why** — the reasoning and rejected alternative. Never "what was done" or "how" (git log/diff already has that; do not restate file names, method names, or a narrative of the change). Keep each entry under ~80 words (excluding heading).
 **Language:** write every entry in English, even when the conversation that produced it is in another language.
 **Who writes:** whoever makes the change, in the same PR as the change; `pr-reviewer` checks the entry. No separate approval.
-**Append-only:** never edit or delete an existing entry. To reverse one, add a new entry with a `Supersedes: <old title>` line — such an entry needs the Tech lead's explicit approval (CODEOWNERS of `.claude/`).
+**Append-only:** never edit or delete an existing entry. To reverse one, add a new entry with a `Supersedes: <old title>` line — such an entry needs the Tech lead's explicit approval.
 
 ---
+
+### 2026-11-25 — CI syncs work item state to Plane
+
+State kept by hand from a session drifts when PRs move elsewhere. Accepted exposure: anyone who can push a branch can read the Plane token, so it belongs to a low-privilege bot. `pull_request_target` alone would not close that; adding an environment limited to `dev` was not adopted. Failing or requiring the check is rejected: a Plane outage would block merges. The template ignores its config; an adopting project commits it, because CI reads it from the base commit. Cost: fork PRs are not synced.
+
+### 2026-11-25 — Release plan checker in the test gate
+
+Release plans and sprint plans cite PRD codes across files, so a stale story, a dropped Must story or an unapproved plan would go unnoticed unless a tool fails the build. It is its own script in the same gate and CI job as the persona check. Rejected: extending the PRD approval checker, which checks one document's approval order per path; cross-document coverage would mix two contracts in one script.
+
+### 2026-11-20 — Human-gated areas are kept by `pr-reviewer`, not by CODEOWNERS
+
+Supersedes: Gates are enforced by GitHub branch protection and CODEOWNERS, not only by agents
+
+The repo has one maintainer, and GitHub never counts a PR author's own approval, so required code-owner review would block every PR touching `.claude/`, `.github/` or `scripts/`. Branch protection keeps the required PR, checks, no force push and no deletion; `pr-reviewer` § 4 keeps the human gate. Rejected: disabling `enforce_admins` (it would let the maintainer skip CI too). A second reviewer brings CODEOWNERS back.
 
 ### 2026-11-16 — Gates are enforced by GitHub branch protection and CODEOWNERS, not only by agents
 
