@@ -4,6 +4,28 @@ Tài liệu này mô tả đầy đủ cách dựng lại quy trình làm việc
 
 Đây là hướng dẫn dựng, không phải nguồn quy tắc của DAONT-BASE. Quy tắc đang áp dụng ở repo này vẫn nằm trong `AGENTS.md` và `docs/process/lifecycle.md`.
 
+> **Update (2026-11-25): Agile planning.** The sections below describe the earlier flow and have not been rewritten. Where they differ, `AGENTS.md` and `docs/process/lifecycle.md` win. When setting up a project, apply this instead of the stage table in §6.1:
+>
+> | Stage | Output | Approver |
+> |---|---|---|
+> | 0 Idea and vision | personas, module list | PO |
+> | 1 Requirements | PRD | PO |
+> | 1b Release plan | `docs/backlog/` | PO |
+> | 1c-UI UI of `REL-1` | design boards | PO + Design lead |
+> | 1c Architecture runway | tech doc v1.0: common part and `REL-1` | Tech lead (+ Security owner for a security area) |
+> | 2 UI design | boards of the next release | PO + Design lead |
+> | 3 Technical design | next release in the tech doc | Tech lead (+ Security owner for a security area) |
+> | 4 Sprint planning | sprint plan | PO (stories), Tech lead (plan file) |
+> | 5 Implementation | code, tests | by risk tier |
+> | 6 Review and merge | PR into `dev` | `pr-reviewer` or the human approver |
+> | 6b Sprint review | demo | PO |
+> | 6c Sprint retro | sprint numbers | — |
+> | 7 Release | tag, changelog | Release manager |
+>
+> - Also copy `scripts/check-release-plan.ts`, `scripts/plane-sync.ts` (with their tests), `docs/backlog/`, `.github/workflows/plane-sync.yml` and `.claude/plane.example.json`.
+> - Only the session of a module's Owner writes to Plane and `progress.md` (the Sprint owner's session for the Cycle); subagents never call Plane.
+> - Plane is optional. To turn it on, follow `README.md` § Turning Plane on.
+
 ## 0. Cách đọc
 
 | Ký hiệu | Nghĩa |
